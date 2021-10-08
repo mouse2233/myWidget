@@ -38,15 +38,48 @@ namespace myWidget
             //g.DrawLine(redPen, 0, 75, 150, 75);//гори
             g.DrawEllipse(blackPen, 74, 74, 2, 2);//точка
 
+            int mylen = 50; //длинна стрелки
+            int pop = 75; //поправка на ветер
             int pos = 0;
             // берем по 30 градусов
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < 12; i++) //эт все для часовой стрелки и для цифирблата
             {
                 pos += 30;
-                int x = (int) ((Math.Sin(Math.PI * pos) * 150)+75)/180;
-                int y = (int)((Math.Cos(Math.PI * pos) * 150) + 75) / 180;
+                int x = pop + (int)(mylen * Math.Sin(Math.PI * pos /180));
+                int y = pop + (int)(mylen * Math.Cos(Math.PI * pos / 180));
                 g.DrawLine(redPen, 75, 75, y, x);
             }
+
+            draveOnClock(pic, blackPen, 50, 75, 60, 0);
+            draveOnClock(pic, blackPen, 50, 75, 60, 15);
+        }
+
+        void draveOnClock(PictureBox pic, Pen myPen, int lenArrow, int bias, int count)
+        {
+            //count количество стрелок
+            int step = 360 / count;
+            Graphics g = pic.CreateGraphics();
+            int stepActual = 0;
+            for (int i = 0; i < (count); i++) //эт все для часовой стрелки и для цифирблата
+            {
+                stepActual += step;
+                int x = bias + (int)(lenArrow * Math.Sin(Math.PI * stepActual / 180));
+                int y = bias + (int)(lenArrow * Math.Cos(Math.PI * stepActual / 180));
+                g.DrawLine(myPen, 75, 75, y, x);
+            }
+
+        }
+        //bias - смещение
+        void draveOnClock(PictureBox pic, Pen myPen, int lenArrow, int bias, int count, int actualPosition)
+        {
+            //count количество стрелок
+            int step = 360 / count;
+            Graphics g = pic.CreateGraphics();
+            int stepActual = step*actualPosition;
+                int x = bias - (int)(lenArrow * Math.Cos(Math.PI * stepActual / 180));
+                int y = bias + (int)(lenArrow * Math.Sin(Math.PI * stepActual / 180));
+                g.DrawLine(myPen, 75, 75, y, x);
+
         }
 
         private void button1_Click(object sender, EventArgs e)
