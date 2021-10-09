@@ -7,101 +7,99 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Threading;
+using System.Diagnostics;
+using System.IO;
 
 namespace myWidget
 {
     public partial class Form1 : Form
     {
+        MyClock testClock; //все для рисования часов
+        Thread clockThread; //для цифирблата
+        DateTime startTime; //время запуска
         public Form1()
         {
             InitializeComponent();
+            TopMost = true;
+            this.TransparencyKey = this.BackColor;
+            this.FormBorderStyle = FormBorderStyle.None; //настройка формы без рамки
+            dateLabel.Text = DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString();
+            startTime = DateTime.Now;
         }
-
-        void drawClock(PictureBox pic)
+        void uploadData()//ждет пока можно будет отправить данные о времени работы
         {
-            //0    75   149
-            //
-            //75
-            //
-            //149
 
-            Graphics g = pic.CreateGraphics();
-            Pen blackPen = new Pen(Brushes.Black, 2);
-            Pen redPen = new Pen(Brushes.Red);
-
-            g.DrawEllipse(blackPen, 4, 4, 144, 144); // главный циферблат
-            g.DrawEllipse(blackPen, 72, 2, 6, 6); //верх
-            g.DrawEllipse(blackPen, 72, 144, 6, 6); //низ
-            g.DrawEllipse(blackPen, 144, 72, 6, 6); //право
-            g.DrawEllipse(blackPen, 2, 72, 6, 6); //лево
-            //g.DrawLine(redPen, 75, 0, 75, 150);//верт
-            //g.DrawLine(redPen, 0, 75, 150, 75);//гори
-            g.DrawEllipse(blackPen, 74, 74, 2, 2);//точка
-
-            int mylen = 50; //длинна стрелки
-            int pop = 75; //поправка на ветер
-            int pos = 0;
-            // берем по 30 градусов
-            for (int i = 0; i < 12; i++) //эт все для часовой стрелки и для цифирблата
+        }
+        void drawClock()
+        {
+            while (true)
             {
-                pos += 30;
-                int x = pop + (int)(mylen * Math.Sin(Math.PI * pos /180));
-                int y = pop + (int)(mylen * Math.Cos(Math.PI * pos / 180));
-                g.DrawLine(redPen, 75, 75, y, x);
+                testClock.draveTime();
+                Thread.Sleep(500);
             }
-
-            draveOnClock(pic, blackPen, 50, 75, 60, 0);
-            draveOnClock(pic, blackPen, 50, 75, 60, 15);
-        }
-
-        void draveOnClock(PictureBox pic, Pen myPen, int lenArrow, int bias, int count)
-        {
-            //count количество стрелок
-            int step = 360 / count;
-            Graphics g = pic.CreateGraphics();
-            int stepActual = 0;
-            for (int i = 0; i < (count); i++) //эт все для часовой стрелки и для цифирблата
-            {
-                stepActual += step;
-                int x = bias + (int)(lenArrow * Math.Sin(Math.PI * stepActual / 180));
-                int y = bias + (int)(lenArrow * Math.Cos(Math.PI * stepActual / 180));
-                g.DrawLine(myPen, 75, 75, y, x);
-            }
-
-        }
-        //bias - смещение
-        void draveOnClock(PictureBox pic, Pen myPen, int lenArrow, int bias, int count, int actualPosition)
-        {
-            //count количество стрелок
-            int step = 360 / count;
-            Graphics g = pic.CreateGraphics();
-            int stepActual = step*actualPosition;
-                int x = bias - (int)(lenArrow * Math.Cos(Math.PI * stepActual / 180));
-                int y = bias + (int)(lenArrow * Math.Sin(Math.PI * stepActual / 180));
-                g.DrawLine(myPen, 75, 75, y, x);
-
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //this.FormBorderStyle = FormBorderStyle.None; //настройка формы без рамки
-            drawClock(pictureBox1);
-            //this.FormBorderStyle = FormBorderStyle.None;
-            /*
-            for (int i = 1; i < 10000; i++)
+            testClock = new MyClock(pictureBox1);
+        }
+
+        private void buttonTest_Click(object sender, EventArgs e)
+        {
+            testClock.draveTime();
+        }
+
+        private bool moveForm = false;
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            moveForm = true;
+        }
+
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (moveForm)
             {
-                g.DrawLine(new Pen(Brushes.White, 4), new Point(10, 10), new Point(100, i-1));
-                g.DrawLine(new Pen(Brushes.Red, 4), new Point(10, 10), new Point(100, i));
-            }
-            for (int i = 10000; i > 1; i--)
+                Location = new Point(Cursor.Position.X - 75, Cursor.Position.Y - 75);
+            }            
+        }
+
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+            moveForm = false;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            clockThread = new Thread(drawClock);
+            clockThread.Start();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (clockThread is null)
             {
-                g.DrawLine(new Pen(Brushes.White, 4), new Point(10, 10), new Point(100, i + 1));
-                g.DrawLine(new Pen(Brushes.Red, 4), new Point(10, 10), new Point(100, i));
+
             }
-            */
-            //pictureBox1.Image = null;
-            //g.Dispose();
-            //this.FormBorderStyle = FormBorderStyle.Sizable;
+            else
+            {
+                if (clockThread.IsAlive)
+                    clockThread.Abort();
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            DateTime stopTime = DateTime.Now; //время запуска
+            StreamWriter f = new StreamWriter("D:/tempTime.txt");
+            f.WriteLine(startTime);
+            f.WriteLine(stopTime);
+            f.Close();
         }
     }
 }
