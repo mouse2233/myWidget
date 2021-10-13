@@ -19,25 +19,36 @@ namespace myWidget
         MyClock testClock; //все для рисования часов
         Thread clockThread; //для цифирблата
         DateTime startTime; //время запуска
+        bool menuVisible = false;
         public Form1()
         {
             InitializeComponent();
             this.TransparencyKey = this.BackColor;
             this.FormBorderStyle = FormBorderStyle.None; //настройка формы без рамки
-            dateLabel.Text = DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString();
+        }
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+        visible(menuVisible);
+        dateLabel.Text = DateTime.Now.Day.ToString() + "." + DateTime.Now.Month.ToString() + "." + DateTime.Now.Year.ToString();
             startTime = DateTime.Now;
             dateLabel.BackColor = Color.White;
             testClock = new MyClock(pictureBox1); //init часов
             clockThread = new Thread(drawClock); //инит потока часов
             clockThread.Start(); //старт потока часов
-
+            Thread SQLThread = new Thread(uploadData); //создаем поток и пробуем подключиться к бд
+            SQLThread.Start();
         }
         void uploadData()//ждет пока можно будет отправить данные о времени работы
         {
+            //плюем запросом старую дату
 
+            //и завершаем поток
         }
+
         void drawClock()
         {
+            Thread.Sleep(500);
+            testClock.myInit();
             while (true)
             {
                 testClock.draveTime();
@@ -121,7 +132,7 @@ namespace myWidget
 
         private void buttonTest_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private bool moveForm = false;
@@ -245,12 +256,23 @@ namespace myWidget
         {
             if (type)
             {
-
+                this.Width = 1160;
+                this.Height = 190;
             }
+            else
+            {
+                this.Width = 190;
+                this.Height = 190;
+            }
+            panelTask.Visible = type;
+            panelSetting.Visible = type;
+            panelLoadData.Visible = type;
+            TopMost = checkBoxPoverh.Checked;
         }
         private void pictureBox1_DoubleClick(object sender, EventArgs e)
         {
-            visible(true);
+            menuVisible = !menuVisible;
+            visible(menuVisible);
         }
     }
 }
