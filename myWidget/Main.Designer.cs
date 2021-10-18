@@ -1,6 +1,6 @@
 ﻿namespace myWidget
 {
-    partial class Form1
+    partial class Main
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.buttonSendTextToSQL = new System.Windows.Forms.Button();
+            this.writeTask = new System.Windows.Forms.Button();
+            this.buttonGetTaskFromSQL = new System.Windows.Forms.Button();
             this.buttonDellTaskSQL = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.dateLabel = new System.Windows.Forms.Label();
@@ -64,25 +64,25 @@
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
             // 
-            // button1
+            // writeTask
             // 
-            this.button1.Location = new System.Drawing.Point(3, 81);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(150, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "получить список заданий";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.writeTask.Location = new System.Drawing.Point(3, 81);
+            this.writeTask.Name = "writeTask";
+            this.writeTask.Size = new System.Drawing.Size(150, 23);
+            this.writeTask.TabIndex = 1;
+            this.writeTask.Text = "записать задание";
+            this.writeTask.UseVisualStyleBackColor = true;
+            this.writeTask.Click += new System.EventHandler(this.button1_Click);
             // 
-            // buttonSendTextToSQL
+            // buttonGetTaskFromSQL
             // 
-            this.buttonSendTextToSQL.Location = new System.Drawing.Point(481, 1);
-            this.buttonSendTextToSQL.Name = "buttonSendTextToSQL";
-            this.buttonSendTextToSQL.Size = new System.Drawing.Size(107, 47);
-            this.buttonSendTextToSQL.TabIndex = 2;
-            this.buttonSendTextToSQL.Text = "Отправить задание";
-            this.buttonSendTextToSQL.UseVisualStyleBackColor = true;
-            this.buttonSendTextToSQL.Click += new System.EventHandler(this.buttonTest_Click);
+            this.buttonGetTaskFromSQL.Location = new System.Drawing.Point(481, 1);
+            this.buttonGetTaskFromSQL.Name = "buttonGetTaskFromSQL";
+            this.buttonGetTaskFromSQL.Size = new System.Drawing.Size(107, 47);
+            this.buttonGetTaskFromSQL.TabIndex = 2;
+            this.buttonGetTaskFromSQL.Text = "Получить задание";
+            this.buttonGetTaskFromSQL.UseVisualStyleBackColor = true;
+            this.buttonGetTaskFromSQL.Click += new System.EventHandler(this.buttonTest_Click);
             // 
             // buttonDellTaskSQL
             // 
@@ -164,7 +164,7 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(478, 150);
+            this.dataGridView1.Size = new System.Drawing.Size(478, 139);
             this.dataGridView1.TabIndex = 12;
             // 
             // checkBoxShowTask
@@ -182,7 +182,7 @@
             // panelTask
             // 
             this.panelTask.Controls.Add(this.dataGridView1);
-            this.panelTask.Controls.Add(this.buttonSendTextToSQL);
+            this.panelTask.Controls.Add(this.buttonGetTaskFromSQL);
             this.panelTask.Controls.Add(this.buttonDellTaskSQL);
             this.panelTask.Controls.Add(this.button3);
             this.panelTask.Controls.Add(this.buttonExit);
@@ -204,15 +204,15 @@
             // panelLoadData
             // 
             this.panelLoadData.Controls.Add(this.dateTimePicker2);
-            this.panelLoadData.Controls.Add(this.button1);
+            this.panelLoadData.Controls.Add(this.writeTask);
             this.panelLoadData.Controls.Add(this.textBox1);
             this.panelLoadData.Controls.Add(this.dateTimePicker1);
             this.panelLoadData.Location = new System.Drawing.Point(886, 3);
             this.panelLoadData.Name = "panelLoadData";
-            this.panelLoadData.Size = new System.Drawing.Size(200, 108);
+            this.panelLoadData.Size = new System.Drawing.Size(172, 108);
             this.panelLoadData.TabIndex = 16;
             // 
-            // Form1
+            // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -222,7 +222,8 @@
             this.Controls.Add(this.panelTask);
             this.Controls.Add(this.dateLabel);
             this.Controls.Add(this.pictureBox1);
-            this.Name = "Form1";
+            this.Name = "Main";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Main";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Shown += new System.EventHandler(this.Form1_Shown);
@@ -241,8 +242,8 @@
         #endregion
 
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button buttonSendTextToSQL;
+        private System.Windows.Forms.Button writeTask;
+        private System.Windows.Forms.Button buttonGetTaskFromSQL;
         private System.Windows.Forms.Button buttonDellTaskSQL;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label dateLabel;

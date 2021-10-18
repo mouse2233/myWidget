@@ -14,13 +14,15 @@ using System.Data.SqlClient;
 
 namespace myWidget
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         MyClock testClock; //все для рисования часов
         Thread clockThread; //для цифирблата
         DateTime startTime; //время запуска
         bool menuVisible = false;
-        public Form1()
+        string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=myWidget;Integrated Security=True";
+
+        public Main()
         {
             InitializeComponent();
             this.TransparencyKey = this.BackColor;
@@ -38,10 +40,58 @@ namespace myWidget
             Thread SQLThread = new Thread(uploadData); //создаем поток и пробуем подключиться к бд
             SQLThread.Start();
         }
+        /// <summary>
+        /// Нужно передать время задержки, но до этого запустить в отдельном потоке
+        /// </summary>
+        /// <param name="time"> время задержки</param>
+        void hiddenAfterDelay(int time)
+        {
+            //Ебать тут гемор с делегатами
+            Action action = () => TopMost = false;
+            if (InvokeRequired)
+                Invoke(action);
+            else
+                action();
+            checkBoxPoverh.Checked = !checkBoxPoverh.Checked; //но как вот это работает без делегата, ебать вопрос
+        }
         void uploadData()//ждет пока можно будет отправить данные о времени работы
         {
             //плюем запросом старую дату
+            bool done = false;
+            int ok = 5;
+            while (ok > 0)
+            {
+                try
+                {
+                    StreamReader t = new StreamReader("D:/tempTime.txt");
+                    string date1 = t.ReadLine();
+                    string date2 = t.ReadLine();
 
+                    string sqlExpression = String.Format("insert WorkTime(WorkTime.timeOn, WorkTime.timeOff) VALUES ('" + date1 + "', '" + date2 + "' )");
+                    using (SqlConnection connection = new SqlConnection(connectionString))
+                    {
+                        connection.Open();
+                        // добавление
+                        SqlCommand command = new SqlCommand(sqlExpression, connection);
+                        int ans = command.ExecuteNonQuery();
+                        if (ans != 1)
+                        {
+                            MessageBox.Show("Внимание, возникла ошибка записи данных в sql серсвер");
+                        }
+                    }
+                    ok = 0;
+                    hiddenAfterDelay(1000);
+                    done = !done;
+                    break;
+                }
+                catch
+                {
+                    ok -= 1; //отмерим 5 минут
+                    Thread.Sleep(60000);
+                }                
+            }
+            if (done)
+                MessageBox.Show("Внимание, возникла ошибка записи данных в sql серсвер и закончились попытки переподключений");
             //и завершаем поток
         }
 
@@ -58,7 +108,6 @@ namespace myWidget
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=myWidget;Integrated Security=True";
             string sqlExpression = "select * from Tasks";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -75,6 +124,8 @@ namespace myWidget
                 SqlDataReader number = command.ExecuteReader();
                 //                Console.WriteLine("Добавлено объектов: {0}", number); // 1
                 
+
+
                 List<string[]> data = new List<string[]>();
                 while (number.Read())
                 {
@@ -89,42 +140,10 @@ namespace myWidget
                 }
                 connection.Close();
                 number.Close();
-                var column1 = new DataGridViewColumn();
-                column1.HeaderText = "поле1";
-                column1.Name = "поле2";
-                column1.CellTemplate = new DataGridViewTextBoxCell();
 
-                var column2 = new DataGridViewColumn();
-                column2.HeaderText = "поле1";
-                column2.Name = "поле2";
-                column2.CellTemplate = new DataGridViewTextBoxCell();
 
-                var column3 = new DataGridViewColumn();
-                column3.HeaderText = "поле1";
-                column3.Name = "поле2";
-                column3.CellTemplate = new DataGridViewTextBoxCell();
+                dataGridView1.Columns.Add("", "");
 
-                var column4 = new DataGridViewColumn();
-                column4.HeaderText = "поле1";
-                column4.Name = "поле2";
-                column4.CellTemplate = new DataGridViewTextBoxCell();
-
-                var column5 = new DataGridViewColumn();
-                column5.HeaderText = "поле1";
-                column5.Name = "поле2";
-                column5.CellTemplate = new DataGridViewTextBoxCell();
-
-                var column6 = new DataGridViewColumn();
-                column6.HeaderText = "поле1";
-                column6.Name = "поле2";
-                column6.CellTemplate = new DataGridViewTextBoxCell();
-
-                dataGridView1.Columns.Add(column1);
-                dataGridView1.Columns.Add(column2);
-                dataGridView1.Columns.Add(column3);
-                dataGridView1.Columns.Add(column4);
-                dataGridView1.Columns.Add(column5);
-                dataGridView1.Columns.Add(column6);
                 foreach (string[] s in data)
                     dataGridView1.Rows.Add(s);
             }
@@ -132,7 +151,51 @@ namespace myWidget
 
         private void buttonTest_Click(object sender, EventArgs e)
         {
+            string sqlExpression = "select * from Tasks";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                // создаем параметр для имени
+                //                SqlParameter nameParam = new SqlParameter("@name", name);
+                // добавляем параметр к команде
+                //                command.Parameters.Add(nameParam);
+                // создаем параметр для возраста
+                //                SqlParameter ageParam = new SqlParameter("@age", age);
+                // добавляем параметр к команде
+                //                command.Parameters.Add(ageParam);
+                SqlDataReader number = command.ExecuteReader();
+                //                Console.WriteLine("Добавлено объектов: {0}", number); // 1
 
+                for (int i = 0; i < number.FieldCount; i++)
+                {
+                    DataGridViewColumn column1 = new DataGridViewColumn();
+                    column1.HeaderText = number.GetName(i); //текст в шапке
+                    column1.Width = 100; //ширина колонки
+                    column1.ReadOnly = true; //значение в этой колонке нельзя править
+                    column1.Name = number.GetName(i); //текстовое имя колонки, его можно использовать вместо обращений по индексу
+                    column1.Frozen = true; //флаг, что данная колонка всегда отображается на своем месте
+                    if (number.GetName(i) == "taskStatus")
+                        column1.CellTemplate = new DataGridViewCheckBoxCell(); //тип нашей колонки
+                    if (number.GetName(i) != "taskStatus")
+                        column1.CellTemplate = new DataGridViewTextBoxCell(); //тип нашей колонки
+                    dataGridView1.Columns.Add(column1);
+                }
+                dataGridView1.AllowUserToAddRows = false;
+                List<string[]> data = new List<string[]>();
+                while (number.Read())
+                {
+                    dataGridView1.Rows.Add(number[0].ToString(),
+                    number[1].ToString(),
+                    number[2].ToString(),
+                    number[3].ToString(),
+                    number[4].ToString(),
+                    number[5].ToString()
+                    );                    
+                }                
+                connection.Close();
+                number.Close();
+            }
         }
 
         private bool moveForm = false;
@@ -212,7 +275,8 @@ namespace myWidget
 
         private void button3_Click(object sender, EventArgs e)
         {
-
+            Form formSettings = new Form();
+            formSettings.Show();
         }
 
         private void button4_Click(object sender, EventArgs e)
