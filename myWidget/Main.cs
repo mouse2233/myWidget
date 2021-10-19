@@ -66,7 +66,8 @@ namespace myWidget
                     StreamReader t = new StreamReader("D:/tempTime.txt");
                     string date1 = t.ReadLine();
                     string date2 = t.ReadLine();
-
+                    t.Close();
+                    t.Dispose();
                     string sqlExpression = String.Format("insert WorkTime(WorkTime.timeOn, WorkTime.timeOff) VALUES ('" + date1 + "', '" + date2 + "' )");
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
@@ -108,70 +109,56 @@ namespace myWidget
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string sqlExpression = "select * from Tasks";
+            string sqlExpression = "хп_ЗаписатьЗадачи '" + пЗадача.Text + "', '" + datePicker.Value.ToShortDateString().Replace('.', '/') + "', '" + TimePicker.Value.ToShortTimeString() + "'";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
-                // создаем параметр для имени
-                //                SqlParameter nameParam = new SqlParameter("@name", name);
-                // добавляем параметр к команде
-                //                command.Parameters.Add(nameParam);
-                // создаем параметр для возраста
-                //                SqlParameter ageParam = new SqlParameter("@age", age);
-                // добавляем параметр к команде
-                //                command.Parameters.Add(ageParam);
                 SqlDataReader number = command.ExecuteReader();
-                //                Console.WriteLine("Добавлено объектов: {0}", number); // 1
-                
-
-
-                List<string[]> data = new List<string[]>();
-                while (number.Read())
-                {
-                    data.Add(new string[6]);
-
-                    data[data.Count - 1][0] = number[0].ToString();
-                    data[data.Count - 1][1] = number[1].ToString();
-                    data[data.Count - 1][2] = number[2].ToString();
-                    data[data.Count - 1][3] = number[3].ToString();
-                    data[data.Count - 1][4] = number[4].ToString();
-                    data[data.Count - 1][5] = number[5].ToString();
-                }
                 connection.Close();
                 number.Close();
-
-
-                dataGridView1.Columns.Add("", "");
-
-                foreach (string[] s in data)
-                    dataGridView1.Rows.Add(s);
             }
+
+            panelLoadData.Visible = false;
         }
 
         private void buttonTest_Click(object sender, EventArgs e)
         {
-            string sqlExpression = "select * from Tasks";
+            dataGridView1.Rows.Clear();
+            string sqlExpression = "exec хп_получитьЗадачи";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
-                // создаем параметр для имени
-                //                SqlParameter nameParam = new SqlParameter("@name", name);
-                // добавляем параметр к команде
-                //                command.Parameters.Add(nameParam);
-                // создаем параметр для возраста
-                //                SqlParameter ageParam = new SqlParameter("@age", age);
-                // добавляем параметр к команде
-                //                command.Parameters.Add(ageParam);
                 SqlDataReader number = command.ExecuteReader();
-                //                Console.WriteLine("Добавлено объектов: {0}", number); // 1
-
                 for (int i = 0; i < number.FieldCount; i++)
                 {
                     DataGridViewColumn column1 = new DataGridViewColumn();
                     column1.HeaderText = number.GetName(i); //текст в шапке
-                    column1.Width = 100; //ширина колонки
+                    switch (number.GetName(i))
+                    {
+                        case ("id"):
+                            column1.Width = 20; //ширина колонки
+                            break;
+                        case ("taskName"):
+                            column1.Width = 300; //ширина колонки
+                            break;
+                        case ("taskStatus"):
+                            column1.Width = 50; //ширина колонки
+                            break;
+                        case ("taskDate"):
+                            column1.Width = 100; //ширина колонки
+                            break;
+                        case ("taskTime"):
+                            column1.Width = 100; //ширина колонки
+                            break;                            
+                        default:
+                            column1.Width = 100; //ширина колонки
+                            break;
+                    }
+
+
+                    //column1.Width = 100; //ширина колонки
                     column1.ReadOnly = true; //значение в этой колонке нельзя править
                     column1.Name = number.GetName(i); //текстовое имя колонки, его можно использовать вместо обращений по индексу
                     column1.Frozen = true; //флаг, что данная колонка всегда отображается на своем месте
@@ -189,8 +176,7 @@ namespace myWidget
                     number[1].ToString(),
                     number[2].ToString(),
                     number[3].ToString(),
-                    number[4].ToString(),
-                    number[5].ToString()
+                    number[4].ToString()
                     );                    
                 }                
                 connection.Close();
@@ -219,58 +205,7 @@ namespace myWidget
 
         private void button2_Click(object sender, EventArgs e)
         {
-             // создадим таблицу вывода товаров с колонками
-             //Название, Цена, Остаток
 
-            var column1 = new DataGridViewColumn();
-            column1.HeaderText = "Название"; //текст в шапке
-            column1.Width = 100; //ширина колонки
-            column1.ReadOnly = true; //значение в этой колонке нельзя править
-            column1.Name = "name"; //текстовое имя колонки, его можно использовать вместо обращений по индексу
-            column1.Frozen = true; //флаг, что данная колонка всегда отображается на своем месте
-            column1.CellTemplate = new DataGridViewTextBoxCell(); //тип нашей колонки
-
-            var column2 = new DataGridViewColumn();
-            column2.HeaderText = "Цена";
-            column2.Name = "price";
-            column2.CellTemplate = new DataGridViewTextBoxCell();
-
-            var column3 = new DataGridViewColumn();
-            column3.HeaderText = "Остаток";
-            column3.Name = "count";
-            column3.CellTemplate = new DataGridViewTextBoxCell();
-
-            dataGridView1.Columns.Add(column1);
-            dataGridView1.Columns.Add(column2);
-            dataGridView1.Columns.Add(column3);
-
-            dataGridView1.AllowUserToAddRows = false; //запрешаем пользователю самому добавлять строки
-
-            for (int i = 0; i < 5; ++i)
-            {
-                //Добавляем строку, указывая значения колонок поочереди слева направо
-                dataGridView1.Rows.Add("Пример 1, Товар " + i, i * 1000, i);
-            }
-
-            for (int i = 0; i < 5; ++i)
-            {
-                //Добавляем строку, указывая значения каждой ячейки по имени (можно использовать индекс 0, 1, 2 вместо имен)
-                dataGridView1.Rows.Add();
-                dataGridView1["name", dataGridView1.Rows.Count - 1].Value = "Пример 2, Товар " + i;
-                dataGridView1["price", dataGridView1.Rows.Count - 1].Value = i * 1000;
-                dataGridView1["count", dataGridView1.Rows.Count - 1].Value = i;
-            }
-
-            //А теперь простой пройдемся циклом по всем ячейкам
-            for (int i = 0; i < dataGridView1.Rows.Count; ++i)
-            {
-                for (int j = 0; j < dataGridView1.Columns.Count; ++j)
-                {
-                    //Значения ячеек хряняться в типе object
-                    //это позволяет хранить любые данные в таблице
-                    object o = dataGridView1[j, i].Value;
-                }
-            }
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -291,6 +226,7 @@ namespace myWidget
                     clockThread.Abort();
             }
             this.Close();
+            this.Dispose();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -320,8 +256,8 @@ namespace myWidget
         {
             if (type)
             {
-                this.Width = 1160;
-                this.Height = 190;
+                this.Width = 1080;
+                this.Height = 400;
             }
             else
             {
@@ -337,6 +273,11 @@ namespace myWidget
         {
             menuVisible = !menuVisible;
             visible(menuVisible);
+        }
+
+        private void кнНовоеЗадание_Click(object sender, EventArgs e)
+        {
+            panelLoadData.Visible = true;
         }
     }
 }
