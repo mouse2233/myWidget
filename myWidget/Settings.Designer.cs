@@ -73,7 +73,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(200, 81);
+            this.ClientSize = new System.Drawing.Size(291, 84);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.checkBoxShowTask);
             this.Controls.Add(this.checkBoxPoverh);

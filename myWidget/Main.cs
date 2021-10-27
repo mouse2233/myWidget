@@ -52,7 +52,7 @@ namespace myWidget
                 Invoke(action);
             else
                 action();
-            checkBoxPoverh.Checked = !checkBoxPoverh.Checked; //но как вот это работает без делегата, ебать вопрос
+            //checkBoxPoverh.Checked = !checkBoxPoverh.Checked; //но как вот это работает без делегата, ебать вопрос
         }
         void uploadData()//ждет пока можно будет отправить данные о времени работы
         {
@@ -75,14 +75,14 @@ namespace myWidget
                         // добавление
                         SqlCommand command = new SqlCommand(sqlExpression, connection);
                         int ans = command.ExecuteNonQuery();
-                        if (ans != 1)
+                        if (ans != 1 && ok > 0)
                         {
                             MessageBox.Show("Внимание, возникла ошибка записи данных в sql серсвер");
                         }
                     }
                     ok = 0;
                     hiddenAfterDelay(1000);
-                    done = !done;
+                    done = true;
                     break;
                 }
                 catch
@@ -91,7 +91,7 @@ namespace myWidget
                     Thread.Sleep(60000);
                 }                
             }
-            if (done)
+            if (!done)
                 MessageBox.Show("Внимание, возникла ошибка записи данных в sql серсвер и закончились попытки переподключений");
             //и завершаем поток
         }
@@ -109,23 +109,27 @@ namespace myWidget
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string sqlExpression = "хп_ЗаписатьЗадачи '" + пЗадача.Text + "', '" + datePicker.Value.ToShortDateString().Replace('.', '/') + "', '" + TimePicker.Value.ToShortTimeString() + "'";
+            //string sqlExpression = "хп_ЗаписатьЗадачи '" + пЗадача.Text + "', '" + datePicker.Value.ToShortDateString().Replace('.', '/') + "', '" + TimePicker.Value.ToShortTimeString() + "'";
+            /*
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                //SqlCommand command = new SqlCommand(sqlExpression, connection);
                 SqlDataReader number = command.ExecuteReader();
                 connection.Close();
                 number.Close();
             }
-
-            panelLoadData.Visible = false;
+            */
+            //panelLoadData.Visible = false;
         }
 
         private void buttonTest_Click(object sender, EventArgs e)
         {
+            dataGridView1.Columns.Clear();
             dataGridView1.Rows.Clear();
             string sqlExpression = "exec хп_получитьЗадачи";
+            if (checkGetChecket.Checked)
+                sqlExpression += " @Выполненные = 1";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -205,13 +209,31 @@ namespace myWidget
 
         private void button2_Click(object sender, EventArgs e)
         {
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                string sqlExpression = "хп_УдалитьЗадачу ";
+                sqlExpression += row.Cells[0].Value.ToString();
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(sqlExpression, connection);
+                    SqlDataReader number = command.ExecuteReader();
+                    connection.Close();
+                    number.Close();
+                }
 
+            }
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                dataGridView1.Rows.Remove(row);
+            }
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Form formSettings = new Form();
+            Form formSettings = new Settings();
             formSettings.Show();
+            //panelSetting.Visible = true;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -227,6 +249,7 @@ namespace myWidget
             }
             this.Close();
             this.Dispose();
+
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -249,7 +272,7 @@ namespace myWidget
 
         private void checkBoxPoverh_CheckedChanged(object sender, EventArgs e)
         {
-            TopMost = checkBoxPoverh.Checked;
+            //TopMost = checkBoxPoverh.Checked;
         }
 
         private void visible(bool type)
@@ -265,9 +288,9 @@ namespace myWidget
                 this.Height = 190;
             }
             panelTask.Visible = type;
-            panelSetting.Visible = type;
-            panelLoadData.Visible = type;
-            TopMost = checkBoxPoverh.Checked;
+            //panelSetting.Visible = type;
+            //panelLoadData.Visible = type;
+            //TopMost = checkBoxPoverh.Checked;
         }
         private void pictureBox1_DoubleClick(object sender, EventArgs e)
         {
@@ -277,7 +300,54 @@ namespace myWidget
 
         private void кнНовоеЗадание_Click(object sender, EventArgs e)
         {
-            panelLoadData.Visible = true;
+            Form addDB = new ДобавитьЗапись();
+            addDB.Show();
+        }
+
+        private void writeTask_Click(object sender, EventArgs e)
+        {
+            //выставлять дату да нет
+            //string sqlExpression = "хп_ЗаписатьЗадачи '" + пЗадача.Text + "', '" + datePicker.Value.ToShortDateString().Replace('.', '/') + "', '" + TimePicker.Value.ToShortTimeString() + "'";
+            /*
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                SqlDataReader number = command.ExecuteReader();
+                connection.Close();
+                number.Close();
+            }
+            */
+            //panelLoadData.Visible = false;
+        }
+
+        private void buttonReturn_Click(object sender, EventArgs e)
+        {
+            //panelLoadData.Visible = false;
+        }
+
+        private void buttonClose_Click(object sender, EventArgs e)
+        {
+            //panelSetting.Visible = false;
+        }
+
+        private void buttonOK_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dataGridView1.SelectedRows)
+            {
+                string sqlExpression = "хп_ОбновитьЗадачу ";
+                sqlExpression += row.Cells[0].Value.ToString();
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    SqlCommand command = new SqlCommand(sqlExpression, connection);
+                    SqlDataReader number = command.ExecuteReader();
+                    connection.Close();
+                    number.Close();
+                }
+
+            }
+            buttonTest_Click(null, null);
         }
     }
 }
