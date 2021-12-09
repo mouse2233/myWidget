@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Data.SqlClient;
 
+//TODO короче, всю эту дичь с sql надо выкинуть в отдельный класс
+
 namespace myWidget
 {
     public partial class Main : Form
@@ -21,9 +23,11 @@ namespace myWidget
         DateTime startTime; //время запуска
         bool menuVisible = false;
         string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=myWidget;Integrated Security=True";
+        Weather w;
 
         public Main()
         {
+            ShowInTaskbar = false; //убрать иконку приложения в панели задач
             InitializeComponent();
             this.TransparencyKey = this.BackColor;
             this.FormBorderStyle = FormBorderStyle.None; //настройка формы без рамки
@@ -285,7 +289,7 @@ namespace myWidget
             else
             {
                 this.Width = 190;
-                this.Height = 190;
+                this.Height = 300;//190
             }
             panelTask.Visible = type;
             //panelSetting.Visible = type;
@@ -348,6 +352,33 @@ namespace myWidget
 
             }
             buttonTest_Click(null, null);
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            w = new Weather();
+            w.GetActualWeatherLoop(3);//для нормальной работы
+            w.TakeNewData += W_TakeNewData;
+        }
+
+        private void W_TakeNewData()
+        {
+            var data = w.getLoadData();
+            textBox1.Text = "";
+            foreach (var item in data)
+            {
+                Console.WriteLine(item.Value);
+            }
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Focus();
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            w.StopGetActualWeatherLoop();
         }
     }
 }

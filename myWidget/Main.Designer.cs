@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.buttonGetTaskFromSQL = new System.Windows.Forms.Button();
             this.buttonDellTaskSQL = new System.Windows.Forms.Button();
@@ -36,9 +38,13 @@
             this.buttonExit = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panelTask = new System.Windows.Forms.Panel();
-            this.кнНовоеЗадание = new System.Windows.Forms.Button();
-            this.checkGetChecket = new System.Windows.Forms.CheckBox();
             this.buttonOK = new System.Windows.Forms.Button();
+            this.checkGetChecket = new System.Windows.Forms.CheckBox();
+            this.кнНовоеЗадание = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panelTask.SuspendLayout();
@@ -132,15 +138,15 @@
             this.panelTask.Size = new System.Drawing.Size(811, 352);
             this.panelTask.TabIndex = 14;
             // 
-            // кнНовоеЗадание
+            // buttonOK
             // 
-            this.кнНовоеЗадание.Location = new System.Drawing.Point(230, 324);
-            this.кнНовоеЗадание.Name = "кнНовоеЗадание";
-            this.кнНовоеЗадание.Size = new System.Drawing.Size(93, 25);
-            this.кнНовоеЗадание.TabIndex = 13;
-            this.кнНовоеЗадание.Text = "Новое задание";
-            this.кнНовоеЗадание.UseVisualStyleBackColor = true;
-            this.кнНовоеЗадание.Click += new System.EventHandler(this.кнНовоеЗадание_Click);
+            this.buttonOK.Location = new System.Drawing.Point(330, 324);
+            this.buttonOK.Name = "buttonOK";
+            this.buttonOK.Size = new System.Drawing.Size(75, 23);
+            this.buttonOK.TabIndex = 17;
+            this.buttonOK.Text = "Выполнено";
+            this.buttonOK.UseVisualStyleBackColor = true;
+            this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
             // 
             // checkGetChecket
             // 
@@ -152,21 +158,59 @@
             this.checkGetChecket.Text = "Получить выполненые";
             this.checkGetChecket.UseVisualStyleBackColor = true;
             // 
-            // buttonOK
+            // кнНовоеЗадание
             // 
-            this.buttonOK.Location = new System.Drawing.Point(330, 324);
-            this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 17;
-            this.buttonOK.Text = "Выполнено";
-            this.buttonOK.UseVisualStyleBackColor = true;
-            this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
+            this.кнНовоеЗадание.Location = new System.Drawing.Point(230, 324);
+            this.кнНовоеЗадание.Name = "кнНовоеЗадание";
+            this.кнНовоеЗадание.Size = new System.Drawing.Size(93, 25);
+            this.кнНовоеЗадание.TabIndex = 13;
+            this.кнНовоеЗадание.Text = "Новое задание";
+            this.кнНовоеЗадание.UseVisualStyleBackColor = true;
+            this.кнНовоеЗадание.Click += new System.EventHandler(this.кнНовоеЗадание_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(12, 153);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(59, 20);
+            this.button1.TabIndex = 15;
+            this.button1.Text = "start";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(12, 179);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(133, 155);
+            this.textBox1.TabIndex = 16;
+            // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.notifyIcon1.Text = "Виджет часов";
+            this.notifyIcon1.Visible = true;
+            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(78, 153);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(67, 20);
+            this.button2.TabIndex = 17;
+            this.button2.Text = "stop";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click_1);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(971, 361);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.panelTask);
             this.Controls.Add(this.dateLabel);
             this.Controls.Add(this.pictureBox1);
@@ -197,6 +241,10 @@
         private System.Windows.Forms.Button кнНовоеЗадание;
         private System.Windows.Forms.CheckBox checkGetChecket;
         private System.Windows.Forms.Button buttonOK;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.Button button2;
     }
 }
 
