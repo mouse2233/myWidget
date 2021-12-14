@@ -359,16 +359,24 @@ namespace myWidget
             w = new Weather();
             w.GetActualWeatherLoop(3);//для нормальной работы
             w.TakeNewData += W_TakeNewData;
+            button1.Enabled = false;
         }
 
         private void W_TakeNewData()
         {
             var data = w.getLoadData();
-            textBox1.Text = "";
+            string temp = "";
             foreach (var item in data)
             {
+                temp = temp + item.Value + "\r\n";
                 Console.WriteLine(item.Value);
             }
+            
+            this.Invoke(new MethodInvoker(() =>
+            {
+                textBox1.Text = "";
+                textBox1.Text = temp + DateTime.Now.ToLocalTime().ToString();
+            }));
         }
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -379,6 +387,7 @@ namespace myWidget
         private void button2_Click_1(object sender, EventArgs e)
         {
             w.StopGetActualWeatherLoop();
+            button1.Enabled = true;
         }
     }
 }
