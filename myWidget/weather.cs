@@ -8,6 +8,8 @@ using System.Xml;
 
 namespace myWidget
 {
+    /*первый раз получаем погоду на неделю одновременно заполняем погоду на день*/
+
     /// <summary>
     /// класс для работы с погодой с сайта
     /// </summary>
@@ -52,7 +54,7 @@ namespace myWidget
         {
             try
             {
-                WebRequest request = WebRequest.Create(@"http://api.openweathermap.org/data/2.5/weather?id=" + "520555" /*Nizhniy Novgorod*/ + @"&appid=" + apiKey + "&units=metric" + "&mode=xml");
+                WebRequest request = WebRequest.Create(@"http://api.openweathermap.org/data/2.5/weather?id=" + "520555" /*Nizhniy Novgorod*/ + @"&appid=" + apiKey + "&units=metric" + "&mode=xml&lang=ru");
                 WebResponse response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
                 {
@@ -74,7 +76,6 @@ namespace myWidget
                 SayError?.Invoke("error 2, internet modul " + e.Message);
                 status = "error 2, internet modul " + e.Message;
             }
-
         }
 
         /// <summary>
@@ -160,6 +161,38 @@ namespace myWidget
                             break;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// получает погогду на неделю и одновременно на день
+        /// </summary>
+        public void GetWeekWeather()
+        {
+            try
+            {
+                WebRequest request = WebRequest.Create(@"https://api.openweathermap.org/data/2.5/forecast/?id=" + "520555" /*Nizhniy Novgorod*/ + @"&appid=" + apiKey + "&cnt=7&units=metric" + "&mode=xml&lang=ru");
+                WebResponse response = request.GetResponse();
+                using (Stream stream = response.GetResponseStream())
+                {
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        string line = "";
+                        line = reader.ReadToEnd();
+                        Console.WriteLine(line);
+                        //xmlPars(line);
+                        //разобьем пожалуй на 
+                    }
+                }
+                response.Close();
+                Console.WriteLine("Запрос выполнен");
+                Console.Read();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Отвал короче " + e.Message);
+                SayError?.Invoke("error 2, internet modul " + e.Message);
+                status = "error 2, internet modul " + e.Message;
             }
         }
     }

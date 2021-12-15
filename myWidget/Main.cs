@@ -21,6 +21,7 @@ namespace myWidget
         MyClock testClock; //все для рисования часов
         Thread clockThread; //для цифирблата
         DateTime startTime; //время запуска
+        CustomImage customImage; //для картинок
         bool menuVisible = false;
         string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=myWidget;Integrated Security=True";
         Weather w;
@@ -41,8 +42,10 @@ namespace myWidget
             testClock = new MyClock(pictureBox1); //init часов
             clockThread = new Thread(drawClock); //инит потока часов
             clockThread.Start(); //старт потока часов
+            customImage = new CustomImage();
             Thread SQLThread = new Thread(uploadData); //создаем поток и пробуем подключиться к бд
             SQLThread.Start();
+            //pictureBox2.Image = customImage.connectImage(customImage.getImage("01d"), customImage.getImage("02d"), 75);
         }
         /// <summary>
         /// Нужно передать время задержки, но до этого запустить в отдельном потоке
@@ -368,10 +371,15 @@ namespace myWidget
             string temp = "";
             foreach (var item in data)
             {
-                temp = temp + item.Value + "\r\n";
+                temp = temp + item.Key + "=" + item.Value + "\r\n";
                 Console.WriteLine(item.Value);
             }
-            
+
+            this.Invoke(new MethodInvoker(() =>
+            {
+                pictureBox2.Image = customImage.getImage(data["icon"]);
+            }));
+
             this.Invoke(new MethodInvoker(() =>
             {
                 textBox1.Text = "";
@@ -381,13 +389,20 @@ namespace myWidget
 
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            this.Focus();
+            this.TopMost = true;
+            this.TopMost = false;
         }
 
         private void button2_Click_1(object sender, EventArgs e)
         {
             w.StopGetActualWeatherLoop();
             button1.Enabled = true;
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            w = new Weather();
+            w.GetWeekWeather();
         }
     }
 }
